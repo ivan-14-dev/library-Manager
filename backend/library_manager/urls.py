@@ -41,8 +41,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('users.urls')),
     path('api/books/', include('books.urls')),
-    # path('api/borrow/', include('borrow.urls')),
-    # path('api/notifications/', include('notifications.urls')),
+    path('api/borrow/', include('borrow.urls')),
+    path('api/notifications/', include('notifications.urls')),
     # path('api/reports/', include('reports.urls')),
     # path('api/payments/', include('payments.urls')),
     
