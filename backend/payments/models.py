@@ -4,7 +4,7 @@ Modèles pour la gestion des paiements d'amendes
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from apps.users.models import User
+from users.models import User
 
 
 class Payment(models.Model):

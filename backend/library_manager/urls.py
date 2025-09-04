@@ -44,7 +44,7 @@ urlpatterns = [
     path('api/borrow/', include('borrow.urls')),
     path('api/notifications/', include('notifications.urls')),
     path('api/reports/', include('reports.urls')),
-    # path('api/payments/', include('payments.urls')),
+    path('api/payments/', include('payments.urls')),
     
     # Documentation
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

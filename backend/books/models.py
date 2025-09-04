@@ -3,6 +3,8 @@ Modèles pour la gestion du catalogue de livres
 """
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from pytz import timezone
+from users.models import User
 
 
 class Author(models.Model):
@@ -95,3 +97,57 @@ class Book(models.Model):
                 self.available_copies += difference
         
         super().save(*args, **kwargs)
+
+class PersonalBook(models.Model):
+    """
+    Modèle pour les livres personnels rédigés par les utilisateurs
+    """
+    class Status(models.TextChoices):
+        DRAFT = 'DRAFT', _('Brouillon')
+        PUBLISHED = 'PUBLISHED', _('Publié')
+        ARCHIVED = 'ARCHIVED', _('Archivé')
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='personal_books', verbose_name=_('Auteur'))
+    title = models.CharField(max_length=200, verbose_name=_('Titre'))
+    content = models.TextField(verbose_name=_('Contenu'))
+    summary = models.TextField(blank=True, verbose_name=_('Résumé'))
+    cover_image = models.ImageField(upload_to='personal_book_covers/', null=True, blank=True, verbose_name=_('Image de couverture'))
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.DRAFT,
+        verbose_name=_('Statut')
+    )
+    is_public = models.BooleanField(default=False, verbose_name=_('Public'))
+    word_count = models.PositiveIntegerField(default=0, verbose_name=_('Nombre de mots'))
+    character_count = models.PositiveIntegerField(default=0, verbose_name=_('Nombre de caractères'))
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Date de création'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Date de modification'))
+    published_at = models.DateTimeField(null=True, blank=True, verbose_name=_('Date de publication'))
+    
+    class Meta:
+        verbose_name = _('Livre personnel')
+        verbose_name_plural = _('Livres personnels')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"
+    
+    def save(self, *args, **kwargs):
+        # Calculer les statistiques de texte
+        self.word_count = len(self.content.split())
+        self.character_count = len(self.content)
+        
+        # Mettre à jour la date de publication si le statut change en PUBLISHED
+        if self.status == self.Status.PUBLISHED and not self.published_at:
+            self.published_at = timezone.now()
+        elif self.status != self.Status.PUBLISHED:
+            self.published_at = None
+            
+        super().save(*args, **kwargs)
+    
+    def get_reading_time(self):
+        """Estimer le temps de lecture en minutes"""
+        words_per_minute = 200  # Vitesse de lecture moyenne
+        return max(1, round(self.word_count / words_per_minute))
