@@ -1,0 +1,20 @@
+Cas specifique dans Meta: pour les Models dans les applications 
+
+db_table	        Nom de la table dans la base de données (par défaut : nom_de_lapp_nomdumodel)	"produit"
+ordering	        Définit l’ordre par défaut des objets quand on fait un .all()	['-date_creation']
+verbose_name	    Nom lisible pour l’objet (utilisé dans l’admin Django)	"Produit"
+verbose_name_plural	Nom pluriel pour l’objet	"Produits"
+unique_together	    Empêche les doublons sur plusieurs champs combinés	[('nom', 'prix')]
+constraints	        Définit des contraintes plus complexes	[models.CheckConstraint(check=models.Q(prix__gte=0), name='prix_positif')]
+permissions	        Ajoute des permissions personnalisées	[("peut_voir_prix", "Peut voir le prix")]
+get_latest_by	    Spécifie le champ utilisé pour la méthode .latest()	'date_creation'
+abstract	        Indique si le modèle est abstrait (pas de table créée)	True
+managed	            Si False, Django ne crée ni ne modifie la table (utile pour les tables existantes)	False
+indexes	            Définit des index spécifiques sur des champs	[models.Index(fields=['nom'])]
+
+
+
+
+Backend :
+    - App : 
+            . Users
