@@ -5,10 +5,8 @@ import os
 from pathlib import Path
 from decouple import config, Csv
 from datetime import timedelta
-
-import os
 import environ
-from pathlib import Path
+from .secret_manager import get_secret
 
 # Définir le répertoire de base du projet
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,8 +17,19 @@ env = environ.Env(
 )
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
+# Récupération sécurisée de la SECRET_KEY
+try:
+    SECRET_KEY = get_secret("DJANGO_SECRET_KEY")
+except Exception as e:
+    if env("DEBUG"):
+        # Fallback pour le développement uniquement
+        SECRET_KEY = "django-insecure-!dev!key!only!"
+    else:
+        raise ImproperlyConfigured(
+            f"Erreur de configuration SECRET_KEY: {str(e)}"
+        ) from e
+
 DEBUG = env("DEBUG")
-SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 INSTALLED_APPS = [
@@ -37,6 +46,9 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'drf_yasg',
+
+    #Ajout de admin_extension pour améliorer l'admin
+    'django_extensions',
     
     # Local apps
     'users',
@@ -45,6 +57,12 @@ INSTALLED_APPS = [
     'notifications',
     'reports',
     'payments',
+    'groups',
+    'publishing',
+    'analytics',
+    'ai',
+    'export',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -110,6 +128,16 @@ TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_TZ = True
 
+# Configuration des langues
+LANGUAGES = [
+    ('fr', 'Français'),
+    ('en', 'English'),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
@@ -165,3 +193,35 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+
+
+# Ajout de fichier de log pour les debugs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

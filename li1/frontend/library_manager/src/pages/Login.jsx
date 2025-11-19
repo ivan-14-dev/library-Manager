@@ -1,263 +1,414 @@
+// src/pages/Login.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
-import { FiLogIn, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import { useAuth } from '../context/AuthContext.jsx';
-import { toast } from 'react-toastify';
-
-const LoginContainer = styled.div`
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 0;
-`;
-
-const LoginCard = styled.div`
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  padding: 3rem;
-  width: 100%;
-  max-width: 400px;
-
-  @media (max-width: 480px) {
-    padding: 2rem;
-    margin: 0 1rem;
-  }
-`;
-
-const LoginHeader = styled.div`
-  text-align: center;
-  margin-bottom: 2rem;
-
-  h1 {
-    font-size: 2rem;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    color: #6c757d;
-  }
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const InputGroup = styled.div`
-  position: relative;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
-  border: 2px solid #e9ecef;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-
-  &:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-
-  &.error {
-    border-color: #dc3545;
-  }
-`;
-
-const InputIcon = styled.span`
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6c757d;
-`;
-
-const TogglePassword = styled.button`
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  color: #6c757d;
-  padding: 0;
-`;
-
-const ErrorMessage = styled.span`
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  display: block;
-`;
-
-const SubmitButton = styled.button`
-  padding: 1rem;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
-  &:hover:not(:disabled) {
-    background: #0056b3;
-  }
-
-  &:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-  }
-`;
-
-const Divider = styled.div`
-  text-align: center;
-  margin: 1.5rem 0;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #e9ecef;
-  }
-
-  span {
-    background: white;
-    padding: 0 1rem;
-    color: #6c757d;
-    position: relative;
-  }
-`;
-
-const RegisterLink = styled.div`
-  text-align: center;
-  margin-top: 1.5rem;
-
-  p {
-    color: #6c757d;
-  }
-
-  a {
-    color: #007bff;
-    font-weight: 500;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Button } from '../components/common/StyledComponents';
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const { login, loading } = useAuth();
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { login, loginWithProvider } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  const from = location.state?.from?.pathname || '/';
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const onSubmit = async (data) => {
     try {
-      await login(data);
-      navigate(from, { replace: true });
-    } catch (error) {
-      // Error handling is done in the auth context
+      await login(credentials);
+      navigate('/');
+    } catch (err) {
+      setError('Email ou mot de passe incorrect');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      await loginWithProvider(provider);
+      navigate('/');
+    } catch (err) {
+      setError(`Erreur lors de la connexion avec ${provider}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <LoginContainer>
-      <LoginCard>
-        <LoginHeader>
-          <h1>Connexion</h1>
-          <p>Accédez à votre espace personnel</p>
-        </LoginHeader>
+      <LoginWrapper>
+        {/* Section gauche - Illustration */}
+        <LeftSection>
+          <IllustrationContainer>
+           <Illustration src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=400&fit=crop&crop=center" alt="Bibliothèque" />
+           <IllustrationTitle>Bibliothèque Digitale</IllustrationTitle>
+           <IllustrationSubtitle>
+             Accédez à des milliers de livres et ressources numériques
+             depuis votre espace personnel
+           </IllustrationSubtitle>
+         </IllustrationContainer>
+        </LeftSection>
 
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <InputGroup>
-            <InputIcon>
-              <FiMail />
-            </InputIcon>
-            <Input
-              type="text"
-              placeholder="Nom d'utilisateur ou email"
-              className={errors.username ? 'error' : ''}
-              {...register('username', {
-                required: "Le nom d'utilisateur est requis",
-              })}
-            />
-            {errors.username && (
-              <ErrorMessage>{errors.username.message}</ErrorMessage>
-            )}
-          </InputGroup>
+        {/* Section droite - Formulaire */}
+        <RightSection>
+          <LoginCard>
+            <LoginHeader>
+              <LoginTitle>Content de vous revoir !</LoginTitle>
+              <LoginSubtitle>Connectez-vous à votre compte</LoginSubtitle>
+            </LoginHeader>
 
-          <InputGroup>
-            <InputIcon>
-              <FiLock />
-            </InputIcon>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Mot de passe"
-              className={errors.password ? 'error' : ''}
-              {...register('password', {
-                required: 'Le mot de passe est requis',
-                minLength: {
-                  value: 8,
-                  message: 'Le mot de passe doit contenir au moins 8 caractères',
-                },
-              })}
-            />
-            <TogglePassword
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FiEyeOff /> : <FiEye />}
-            </TogglePassword>
-            {errors.password && (
-              <ErrorMessage>{errors.password.message}</ErrorMessage>
-            )}
-          </InputGroup>
+            {/* Boutons de connexion sociale */}
+            <SocialLoginSection>
+              <SocialButton
+                type="button"
+                variant="google"
+                onClick={() => handleSocialLogin('google')}
+                disabled={loading}
+              >
+                <SocialIcon src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
+                Google
+              </SocialButton>
 
-          <SubmitButton type="submit" disabled={loading}>
-            {loading ? 'Connexion...' : (
-              <>
-                <FiLogIn /> Se connecter
-              </>
-            )}
-          </SubmitButton>
-        </Form>
+              <SocialButton
+                type="button"
+                variant="github"
+                onClick={() => handleSocialLogin('github')}
+                disabled={loading}
+              >
+                <SocialIcon src="https://github.githubassets.com/images/modules/site/icons/footer/github-mark.svg" alt="GitHub" />
+                GitHub
+              </SocialButton>
+            </SocialLoginSection>
 
-        <Divider>
-          <span>Ou</span>
-        </Divider>
+            <Divider>
+              <DividerLine />
+              <DividerText>Ou continuer avec email</DividerText>
+              <DividerLine />
+            </Divider>
 
-        <RegisterLink>
-          <p>Vous n'avez pas de compte ?</p>
-          <Link to="/register">Créer un compte</Link>
-        </RegisterLink>
-      </LoginCard>
+            {/* Formulaire de connexion par email */}
+            <LoginForm onSubmit={handleSubmit}>
+              {error && <ErrorMessage>{error}</ErrorMessage>}
+              
+              <FormGroup>
+                <Label>Adresse email</Label>
+                <Input
+                  type="email"
+                  value={credentials.email}
+                  onChange={(e) => setCredentials({...credentials, email: e.target.value})}
+                  placeholder="entrez votre email"
+                  required
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Mot de passe</Label>
+                <Input
+                  type="password"
+                  value={credentials.password}
+                  onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                  placeholder="votre mot de passe"
+                  required
+                />
+              </FormGroup>
+
+              <FormOptions>
+                <RememberMe>
+                  <Checkbox type="checkbox" id="remember" />
+                  <CheckboxLabel htmlFor="remember">Se souvenir de moi</CheckboxLabel>
+                </RememberMe>
+                <ForgotPasswordLink to="/forgot-password">
+                  Mot de passe oublié ?
+                </ForgotPasswordLink>
+              </FormOptions>
+
+              <LoginButton type="submit" variant="primary" disabled={loading}>
+                {loading ? 'Connexion...' : 'Se connecter'}
+              </LoginButton>
+            </LoginForm>
+
+            <LoginFooter>
+              <FooterText>
+                Pas encore de compte ? <FooterLink to="/register">Créer un compte</FooterLink>
+              </FooterText>
+            </LoginFooter>
+          </LoginCard>
+        </RightSection>
+      </LoginWrapper>
     </LoginContainer>
   );
 };
+
+const LoginContainer = styled.div`
+  min-height: 100vh;
+  background: ${props => props.theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+`;
+
+const LoginWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1000px;
+  width: 100%;
+  background: ${props => props.theme.colors.white};
+  border-radius: 20px;
+  box-shadow: ${props => props.theme.shadows.xl};
+  overflow: hidden;
+  min-height: 600px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+`;
+
+const LeftSection = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const IllustrationContainer = styled.div`
+  text-align: center;
+  color: white;
+  max-width: 400px;
+`;
+
+const Illustration = styled.img`
+  width: 200px;
+  height: 200px;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  object-fit: cover;
+  border-radius: 10px;
+`;
+
+const IllustrationTitle = styled.h1`
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  opacity: 0.95;
+`;
+
+const IllustrationSubtitle = styled.p`
+  font-size: 1.1rem;
+  opacity: 0.8;
+  line-height: 1.6;
+`;
+
+const RightSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+`;
+
+const LoginCard = styled.div`
+  width: 100%;
+  max-width: 400px;
+`;
+
+const LoginHeader = styled.div`
+  text-align: center;
+  margin-bottom: 2rem;
+`;
+
+const LoginTitle = styled.h2`
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: ${props => props.theme.colors.gray[800]};
+  margin-bottom: 0.5rem;
+`;
+
+const LoginSubtitle = styled.p`
+  color: ${props => props.theme.colors.gray[600]};
+  font-size: 0.95rem;
+`;
+
+const SocialLoginSection = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SocialButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid ${props => props.theme.colors.gray[300]};
+  border-radius: 8px;
+  background: ${props => props.theme.colors.white};
+  color: ${props => props.theme.colors.gray[700]};
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${props => props.theme.colors.gray[50]};
+    border-color: ${props => props.theme.colors.gray[400]};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const SocialIcon = styled.img`
+  width: 18px;
+  height: 18px;
+`;
+
+const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+`;
+
+const DividerLine = styled.div`
+  flex: 1;
+  height: 1px;
+  background: ${props => props.theme.colors.gray[300]};
+`;
+
+const DividerText = styled.span`
+  padding: 0 1rem;
+  color: ${props => props.theme.colors.gray[500]};
+  font-size: 0.875rem;
+  background: ${props => props.theme.colors.white};
+`;
+
+const LoginForm = styled.form`
+  margin-bottom: 1.5rem;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 1.25rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  font-weight: 500;
+  color: ${props => props.theme.colors.gray[700]};
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid ${props => props.theme.colors.gray[300]};
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${props => props.theme.colors.primary};
+    box-shadow: 0 0 0 3px ${props => props.theme.colors.primary}15;
+  }
+
+  &::placeholder {
+    color: ${props => props.theme.colors.gray[400]};
+  }
+`;
+
+const FormOptions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+`;
+
+const RememberMe = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const Checkbox = styled.input`
+  accent-color: ${props => props.theme.colors.primary};
+`;
+
+const CheckboxLabel = styled.label`
+  color: ${props => props.theme.colors.gray[600]};
+  cursor: pointer;
+`;
+
+const ForgotPasswordLink = styled(Link)`
+  color: ${props => props.theme.colors.primary};
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const LoginButton = styled(Button)`
+  width: 100%;
+  justify-content: center;
+  padding: 0.875rem;
+  font-size: 1rem;
+  font-weight: 600;
+`;
+
+const ErrorMessage = styled.div`
+  background: ${props => props.theme.colors.error}10;
+  color: ${props => props.theme.colors.error};
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid ${props => props.theme.colors.error}20;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+`;
+
+const LoginFooter = styled.div`
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid ${props => props.theme.colors.gray[200]};
+`;
+
+const FooterText = styled.p`
+  color: ${props => props.theme.colors.gray[600]};
+  font-size: 0.9rem;
+`;
+
+const FooterLink = styled(Link)`
+  color: ${props => props.theme.colors.primary};
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 export default Login;

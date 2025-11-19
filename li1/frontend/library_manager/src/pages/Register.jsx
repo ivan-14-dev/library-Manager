@@ -6,23 +6,38 @@ import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiBook } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext.jsx';
 
 
-// contener du  register 
-const RegisterContainer = styled.div`       
-  min-height: 80vh;
+// Container for register page
+const RegisterContainer = styled.div`
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem 0;
+  background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
 `;
 
-// card
+// Card
 const RegisterCard = styled.div`
   background: white;
-  border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   padding: 3rem;
   width: 100%;
   max-width: 500px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ed8936, #dd6b20);
+    border-radius: 20px 20px 0 0;
+  }
 
   @media (max-width: 480px) {
     padding: 2rem;
@@ -30,19 +45,21 @@ const RegisterCard = styled.div`
   }
 `;
 
-// L'entete
+// Header
 const RegisterHeader = styled.div`
   text-align: center;
   margin-bottom: 2rem;
 
   h1 {
     font-size: 2rem;
-    color: #2c3e50;
+    color: #1a365d;
     margin-bottom: 0.5rem;
+    font-weight: 700;
   }
 
   p {
-    color: #6c757d;
+    color: #4a5568;
+    font-size: 0.95rem;
   }
 `;
 
@@ -72,37 +89,53 @@ const InputGroup = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
-  border: 2px solid #e9ecef;
-  border-radius: 0.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  background: #f8fafc;
 
   &:focus {
-    border-color: #007bff;
+    border-color: #ed8936;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.1);
+    background: white;
   }
 
   &.error {
-    border-color: #dc3545;
+    border-color: #e53e3e;
+    background: #fed7d7;
+  }
+
+  &::placeholder {
+    color: #a0aec0;
   }
 `;
 
 const Select = styled.select`
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
-  border: 2px solid #e9ecef;
-  border-radius: 0.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 1rem;
-  background: white;
-  transition: border-color 0.3s ease;
+  background: #f8fafc;
+  transition: all 0.3s ease;
 
   &:focus {
-    border-color: #007bff;
+    border-color: #ed8936;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.1);
+    background: white;
   }
 
   &.error {
-    border-color: #dc3545;
+    border-color: #e53e3e;
+    background: #fed7d7;
+  }
+
+  option {
+    background: white;
+    color: #2d3748;
   }
 `;
 
@@ -111,7 +144,8 @@ const InputIcon = styled.span`
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #6c757d;
+  color: #ed8936;
+  font-size: 1.1rem;
 `;
 
 const TogglePassword = styled.button`
@@ -125,7 +159,7 @@ const TogglePassword = styled.button`
 `;
 
 const ErrorMessage = styled.span`
-  color: #dc3545;
+  color: #e53e3e;
   font-size: 0.875rem;
   margin-top: 0.25rem;
   display: block;
@@ -133,26 +167,31 @@ const ErrorMessage = styled.span`
 
 const SubmitButton = styled.button`
   padding: 1rem;
-  background: #007bff;
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
 
   &:hover:not(:disabled) {
-    background: #0056b3;
+    background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
   }
 
   &:disabled {
-    background: #6c757d;
+    background: #a0aec0;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 `;
 
@@ -161,15 +200,16 @@ const LoginLink = styled.div`
   margin-top: 1.5rem;
 
   p {
-    color: #6c757d;
+    color: #4a5568;
   }
 
   a {
-    color: #007bff;
+    color: #ed8936;
     font-weight: 500;
 
     &:hover {
       text-decoration: underline;
+      color: #dd6b20;
     }
   }
 `;
@@ -203,8 +243,8 @@ const Register = () => {
     <RegisterContainer>
       <RegisterCard>
         <RegisterHeader>
-          <h1>Inscription</h1>
-          <p>Créez votre compte pour accéder à la bibliothèque</p>
+          <h1>Sign Up</h1>
+          <p>Create your account to access the library</p>
         </RegisterHeader>
 
         <Form onSubmit={handleSubmit(onSubmit)}>
@@ -215,10 +255,10 @@ const Register = () => {
               </InputIcon>
               <Input
                 type="text"
-                placeholder="Prénom"
+                placeholder="First Name"
                 className={errors.first_name ? 'error' : ''}
                 {...register('first_name', {
-                  required: 'Le prénom est requis',
+                  required: 'First name is required',
                 })}
               />
               {errors.first_name && (
@@ -229,10 +269,10 @@ const Register = () => {
             <InputGroup>
               <Input
                 type="text"
-                placeholder="Nom"
+                placeholder="Last Name"
                 className={errors.last_name ? 'error' : ''}
                 {...register('last_name', {
-                  required: 'Le nom est requis',
+                  required: 'Last name is required',
                 })}
               />
               {errors.last_name && (
@@ -247,13 +287,13 @@ const Register = () => {
             </InputIcon>
             <Input
               type="text"
-              placeholder="Nom d'utilisateur"
+              placeholder="Username"
               className={errors.username ? 'error' : ''}
               {...register('username', {
-                required: "Le nom d'utilisateur est requis",
+                required: "Username is required",
                 minLength: {
                   value: 3,
-                  message: "Le nom d'utilisateur doit contenir au moins 3 caractères",
+                  message: "Username must be at least 3 characters",
                 },
               })}
             />
@@ -271,10 +311,10 @@ const Register = () => {
               placeholder="Email"
               className={errors.email ? 'error' : ''}
               {...register('email', {
-                required: "L'email est requis",
+                required: "Email is required",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Adresse email invalide',
+                  message: 'Invalid email address',
                 },
               })}
             />
@@ -290,12 +330,12 @@ const Register = () => {
             <Select
               className={errors.role ? 'error' : ''}
               {...register('role', {
-                required: 'Le rôle est requis',
+                required: 'Role is required',
               })}
             >
-              <option value="">Sélectionnez votre rôle</option>
-              <option value="STUDENT">Étudiant</option>
-              <option value="PROFESSOR">Professeur</option>
+              <option value="">Select your role</option>
+              <option value="STUDENT">Student</option>
+              <option value="PROFESSOR">Professor</option>
             </Select>
             {errors.role && (
               <ErrorMessage>{errors.role.message}</ErrorMessage>
@@ -308,13 +348,13 @@ const Register = () => {
             </InputIcon>
             <Input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Mot de passe"
+              placeholder="Password"
               className={errors.password ? 'error' : ''}
               {...register('password', {
-                required: 'Le mot de passe est requis',
+                required: 'Password is required',
                 minLength: {
                   value: 8,
-                  message: 'Le mot de passe doit contenir au moins 8 caractères',
+                  message: 'Password must be at least 8 characters',
                 },
               })}
             />
@@ -335,12 +375,12 @@ const Register = () => {
             </InputIcon>
             <Input
               type={showConfirmPassword ? 'text' : 'password'}
-              placeholder="Confirmer le mot de passe"
+              placeholder="Confirm Password"
               className={errors.password_confirmation ? 'error' : ''}
               {...register('password_confirmation', {
-                required: 'Veuillez confirmer votre mot de passe',
+                required: 'Please confirm your password',
                 validate: value =>
-                  value === password || 'Les mots de passe ne correspondent pas',
+                  value === password || 'Passwords do not match',
               })}
             />
             <TogglePassword
@@ -355,13 +395,13 @@ const Register = () => {
           </InputGroup>
 
           <SubmitButton type="submit" disabled={loading}>
-            {loading ? 'Inscription...' : "S'inscrire"}
+            {loading ? 'Signing Up...' : "Sign Up"}
           </SubmitButton>
         </Form>
 
         <LoginLink>
-          <p>Vous avez déjà un compte ?</p>
-          <Link to="/login">Se connecter</Link>
+          <p>Already have an account?</p>
+          <Link to="/login">Sign In</Link>
         </LoginLink>
       </RegisterCard>
     </RegisterContainer>

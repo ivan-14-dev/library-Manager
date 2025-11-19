@@ -44,4 +44,11 @@ export * from './books';
 //export * from './borrow';
 export * from './notifications';
 //export * from './payments';
-export * from './reports'; 
+export * from './reports';
+
+// Nouvelles APIs ajoutées
+export * from './groups';
+export * from './publishing';
+export * from './ai';
+export * from './analytics';
+export * from './export';

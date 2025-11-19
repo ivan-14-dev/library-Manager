@@ -9,6 +9,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from .models import Payment
 from .serializers import PaymentSerializer, PaymentCreateSerializer, StripePaymentIntentSerializer
+from users.permissions import IsAdmin
 
 
 class PaymentListView(generics.ListAPIView):
@@ -27,7 +28,7 @@ class AllPaymentsListView(generics.ListAPIView):
     Vue pour lister tous les paiements (admins seulement)
     """
     serializer_class = PaymentSerializer
-    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
     queryset = Payment.objects.all()
 
 
@@ -117,3 +118,84 @@ class ConfirmStripePaymentView(APIView):
             {'message': _("Paiement confirmé avec succès.")},
             status=status.HTTP_200_OK
         )
+
+
+class PayPalPaymentView(APIView):
+    """
+    Vue pour créer un paiement PayPal
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Implémentation PayPal à ajouter
+        return Response(
+            {'message': 'PayPal integration coming soon'},
+            status=status.HTTP_501_NOT_IMPLEMENTED
+        )
+
+
+class OMMPaymentView(APIView):
+    """
+    Vue pour créer un paiement Orange Money
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Implémentation Orange Money à ajouter
+        return Response(
+            {'message': 'Orange Money integration coming soon'},
+            status=status.HTTP_501_NOT_IMPLEMENTED
+        )
+
+
+class MoMoPaymentView(APIView):
+    """
+    Vue pour créer un paiement MTN Mobile Money
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Implémentation MTN Mobile Money à ajouter
+        return Response(
+            {'message': 'MTN Mobile Money integration coming soon'},
+            status=status.HTTP_501_NOT_IMPLEMENTED
+        )
+
+
+class PaymentStatsView(APIView):
+    """
+    Vue pour les statistiques de paiement (admins seulement)
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        from django.db.models import Sum, Count
+        from django.utils import timezone
+
+        # Statistiques générales
+        total_payments = Payment.objects.count()
+        completed_payments = Payment.objects.filter(status=Payment.Status.COMPLETED).count()
+        total_amount = Payment.objects.filter(status=Payment.Status.COMPLETED).aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+
+        # Statistiques par méthode de paiement
+        payment_methods = Payment.objects.values('payment_method').annotate(
+            count=Count('payment_method'),
+            total_amount=Sum('amount')
+        ).filter(status=Payment.Status.COMPLETED)
+
+        # Statistiques mensuelles
+        current_month = timezone.now().replace(day=1)
+        monthly_revenue = Payment.objects.filter(
+            status=Payment.Status.COMPLETED,
+            paid_at__gte=current_month
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        return Response({
+            'total_payments': total_payments,
+            'completed_payments': completed_payments,
+            'total_amount': total_amount,
+            'monthly_revenue': monthly_revenue,
+            'payment_methods': payment_methods
+        }, status=status.HTTP_200_OK)

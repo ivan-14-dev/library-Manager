@@ -13,8 +13,169 @@ managed	            Si False, Django ne crée ni ne modifie la table (utile pour
 indexes	            Définit des index spécifiques sur des champs	[models.Index(fields=['nom'])]
 
 
+Utilisation de la base de données (postgres) locale pour
+- 
+
+Commande : psql -U <username> -d <nom_de_la_base>
+	   Pour se connecter à une base de données particulier
+
+Commande : \l 
+	   Liste des   bases
+Commande : \dt 
+	   Toutes les tables d'une base de données
+Commande : SELECT <Les parametres> ou * FROM <la table de la base>
+
+
+################################################################################################################
+################################################################################################################
+##########  											      ##########
+##########        Listes des Urls dans le Backend 						      ##########
+##########											      ##########
+################################################################################################################
+################################################################################################################
+
+################################################################################################################
+# Zone admin
+/admin/ django.contrib.admin.sites.index        admin:index
+/admin/<app_label>/     django.contrib.admin.sites.app_index    admin:app_list
+/admin/<url>    django.contrib.admin.sites.catch_all_view
+/admin/auth/group/      django.contrib.admin.options.changelist_view    admin:auth_group_changelist
+/admin/auth/group/<path:object_id>/     django.views.generic.base.RedirectView
+/admin/auth/group/<path:object_id>/change/      django.contrib.admin.options.change_view        admin:auth_group_change
+/admin/auth/group/<path:object_id>/delete/      django.contrib.admin.options.delete_view        admin:auth_group_delete
+/admin/auth/group/<path:object_id>/history/     django.contrib.admin.options.history_view       admin:auth_group_history
+/admin/auth/group/add/  django.contrib.admin.options.add_view   admin:auth_group_add
+/admin/autocomplete/    django.contrib.admin.sites.autocomplete_view    admin:autocomplete
+/admin/books/author/    django.contrib.admin.options.changelist_view    admin:books_author_changelist
+/admin/books/author/<path:object_id>/   django.views.generic.base.RedirectView
+/admin/books/author/<path:object_id>/change/    django.contrib.admin.options.change_view        admin:books_author_change
+/admin/books/author/<path:object_id>/delete/    django.contrib.admin.options.delete_view        admin:books_author_delete
+/admin/books/author/<path:object_id>/history/   django.contrib.admin.options.history_view       admin:books_author_history
+/admin/books/author/add/        django.contrib.admin.options.add_view   admin:books_author_add
+/admin/books/book/      django.contrib.admin.options.changelist_view    admin:books_book_changelist
+/admin/books/book/<path:object_id>/     django.views.generic.base.RedirectView
+/admin/books/book/<path:object_id>/change/      django.contrib.admin.options.change_view        admin:books_book_change
+/admin/books/book/<path:object_id>/delete/      django.contrib.admin.options.delete_view        admin:books_book_delete
+/admin/books/book/<path:object_id>/history/     django.contrib.admin.options.history_view       admin:books_book_history
+/admin/books/book/add/  django.contrib.admin.options.add_view   admin:books_book_add
+/admin/books/category/  django.contrib.admin.options.changelist_view    admin:books_category_changelist
+/admin/books/category/<path:object_id>/ django.views.generic.base.RedirectView
+/admin/books/category/<path:object_id>/change/  django.contrib.admin.options.change_view        admin:books_category_change
+/admin/books/category/<path:object_id>/delete/  django.contrib.admin.options.delete_view        admin:books_category_delete
+/admin/books/category/<path:object_id>/history/ django.contrib.admin.options.history_view       admin:books_category_history
+/admin/books/category/add/      django.contrib.admin.options.add_view   admin:books_category_add
+/admin/books/personalbook/      django.contrib.admin.options.changelist_view    admin:books_personalbook_changelist
+/admin/books/personalbook/<path:object_id>/     django.views.generic.base.RedirectView
+/admin/books/personalbook/<path:object_id>/change/      django.contrib.admin.options.change_view        admin:books_personalbook_change
+/admin/books/personalbook/<path:object_id>/delete/      django.contrib.admin.options.delete_view        admin:books_personalbook_delete
+/admin/books/personalbook/<path:object_id>/history/     django.contrib.admin.options.history_view       admin:books_personalbook_history
+/admin/books/personalbook/add/  django.contrib.admin.options.add_view   admin:books_personalbook_add
+/admin/books/subcategory/       django.contrib.admin.options.changelist_view    admin:books_subcategory_changelist
+/admin/books/subcategory/<path:object_id>/      django.views.generic.base.RedirectView
+/admin/books/subcategory/<path:object_id>/change/       django.contrib.admin.options.change_view        admin:books_subcategory_change
+/admin/books/subcategory/<path:object_id>/delete/       django.contrib.admin.options.delete_view        admin:books_subcategory_delete
+/admin/books/subcategory/<path:object_id>/history/      django.contrib.admin.options.history_view       admin:books_subcategory_history
+/admin/books/subcategory/add/   django.contrib.admin.options.add_view   admin:books_subcategory_add
+/admin/jsi18n/  django.contrib.admin.sites.i18n_javascript      admin:jsi18n
+/admin/login/   django.contrib.admin.sites.login        admin:login
+/admin/logout/  django.contrib.admin.sites.logout       admin:logout
+/admin/password_change/ django.contrib.admin.sites.password_change      admin:password_change
+/admin/password_change/done/    django.contrib.admin.sites.password_change_done admin:password_change_done
+/admin/r/<path:content_type_id>/<path:object_id>/       django.contrib.contenttypes.views.shortcut      admin:view_on_site
+
+
+#Api à ajouter:
+	
+
+
+
+##############################################################################################################################
+#############   /api/
+  * auth/
+/api/auth/login/        users.views.LoginView   login
+/api/auth/logout/       users.views.LogoutView  logout
+/api/auth/me/   users.views.ProfileView profile
+/api/auth/me/update/    users.views.ProfileUpdateView   profile-update
+/api/auth/register/     users.views.RegisterView        register
+
+  * books/
+/api/books/     books.views.BookListView        book-list
+/api/books/<int:pk>/    books.views.BookDetailView      book-detail
+/api/books/<int:pk>/delete/     books.views.BookDeleteView      book-delete
+/api/books/<int:pk>/update/     books.views.BookUpdateView      book-update
+/api/books/authors/     books.views.AuthorListView      author-list
+/api/books/categories/  books.views.CategoryListView    category-list
+/api/books/create/      books.views.BookCreateView      book-create
+/api/books/media/<path> django.views.static.serve
+/api/books/personal/    books.views.PersonalBookListView        personal-books
+/api/books/personal/<int:pk>/   books.views.PersonalBookDetailView      personal-book-detail
+/api/books/personal/public/     books.views.PublicPersonalBookListView  public-personal-books
+/api/books/personal/public/<int:pk>/    books.views.PublicPersonalBookDetailView        public-personal-book-detail
+/api/books/subcategories/       books.views.SubCategoryView     sub-category-list
+
+  *borrow/
+/api/borrow/all/        borrow.views.AllBorrowsListView all-borrows
+/api/borrow/borrow/     borrow.views.BorrowCreateView   borrow-book
+/api/borrow/my/ borrow.views.BorrowListView     my-borrows
+/api/borrow/reservations/<int:reservation_id>/cancel/   borrow.views.CancelReservationView      cancel-reservation
+/api/borrow/reservations/all/   borrow.views.AllReservationsListView    all-reservations
+/api/borrow/reservations/my/    borrow.views.ReservationListView        my-reservations
+/api/borrow/reserve/    borrow.views.ReservationCreateView      reserve-book
+/api/borrow/return/     borrow.views.ReturnBookView     return-book
+
+   *notification/
+/api/notifications/mark-all-as-read/    notifications.views.MarkAllAsReadView   mark-all-as-read
+/api/notifications/mark-as-read/        notifications.views.MarkAsReadView      mark-as-read
+/api/notifications/my/  notifications.views.NotificationListView        my-notifications
+/api/notifications/my/unread/   notifications.views.UnreadNotificationListView  unread-notifications
+/api/notifications/send/        notifications.views.NotificationCreateView      send-notification
+
+  *payment/
+/api/payments/all/      payments.views.AllPaymentsListView      all-payments
+/api/payments/create/   payments.views.PaymentCreateView        create-payment
+/api/payments/my/       payments.views.PaymentListView  my-payments
+/api/payments/stripe/confirm/   payments.views.ConfirmStripePaymentView stripe-confirm
+/api/payments/stripe/create-intent/     payments.views.CreateStripePaymentIntentView    stripe-create-intent
+
+  *report/
+/api/reports/admin/     reports.views.AdminDashboardView        admin-dashboard
+/api/reports/librarian/ reports.views.LibrarianDashboardView    librarian-dashboard
+/api/reports/professor/ reports.views.ProfessorDashboardView    professor-dashboard
+/api/reports/student/   reports.views.StudentDashboardView      student-dashboard
+
+  *media/
+/media/<path>   django.views.static.serve
+
+
+/redoc/ drf_yasg.views.SchemaView       schema-redoc
+/swagger/       drf_yasg.views.SchemaView       schema-swagger-ui
+
+
+
 
 
 Backend :
     - App : 
             . Users
+
+auth/
+ 	login/
+fromat de donné:
+{ 'username':"Ivan", 
+'email' :"ivan@test.com", 
+'password':"motdepasse", 
+'password_confirmation':"motdepasse", 
+'first_name':"Ivan", 'last_name': "Ivan", 'role':"VISITOR", 'phon':"123456789", 'address' : "London", 'date_of_birth' : "12-12-2000", 'student_id': "", 'department' :"", }
+
+
+
+
+
+
+
+
+
+
+Frontend
+ajout de la bibliothèque CKEditor , ClassicEditor pour avoir un editeur de texte personnalisé 
+npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic

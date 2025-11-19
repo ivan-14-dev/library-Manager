@@ -1,25 +1,28 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
-import Header from './components/Layout/Header.jsx';
-import Footer from './components/Layout/Footer.jsx';
+import Header from './components/Header/Header.jsx';
+import Footer from './components/Footer/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Catalog from './pages/Catalog.jsx';
 import BookDetails from './pages/BookDetails.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Profile from './pages/Profile.jsx';
-import DashboardStudent from './pages/DashboardStudent.jsx';
-import DashboardProfessor from './pages/DashboardProfessor.jsx';
-import DashboardLibrarian from './pages/DashboardLibrarian.jsx';
-import DashboardAdmin from './pages/DashboardAdmin.jsx';
+import Dashboard from './pages/Dashboard.jsx'
 import ProtectedRoute from './components/Auth/ProtectedRoute.jsx';
-
 
 // BookPersonnel
 import PersonalBooks from './pages/PersonalBooks.jsx';
 import PersonalBookEditor from './pages/PersonalBookEditor.jsx';
 import PublicPersonalBook from './pages/PublicPersonalBook.jsx';
+import PublicPublications from './pages/PublicPublications.jsx';
+import Editeur from './pages/Editeur.jsx';
+
+import NewRelease from './pages/New.jsx';
+import Popular from './pages/Popular.jsx';
+import EBook from './pages/Ebook.jsx';
+import Articles from './pages/Articles.jsx';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -29,13 +32,12 @@ const AppContainer = styled.div`
 
 const Main = styled.main`
   flex: 1;
-  padding: 2rem 0;
+  padding: 0rem 0;
 `;
 
 function App() {
   return (
     <AppContainer>
-      <Header />
       <Main>
         <Routes>
           {/* Routes publiques */}
@@ -47,33 +49,41 @@ function App() {
           
           {/* Routes protégées */}
           <Route path="/profile" element={
-            <ProtectedRoute  allowedRoles={['STUDENT', 'PROFESSOR', 'LIBRARIAN', 'ADMIN']}>
+            <ProtectedRoute  allowedRoles={['STUDENT', 'PROFESSOR', 'LIBRARIAN', 'ADMIN','VISITOR']}>
               <Profile />
             </ProtectedRoute>
           } />
-          
-          <Route path="/dashboard/student" element={
-            <ProtectedRoute allowedRoles={['STUDENT']}>
-              <DashboardStudent />
+
+          {/* Routes pour le help /help */}
+          <Route path="/help" element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'PROFESSOR', 'LIBRARIAN', 'ADMIN','VISITOR']}>
+              {/* Composant Help à créer */}
+              <div>Help Page - To be implemented</div>
             </ProtectedRoute>
           } />
-          
-          <Route path="/dashboard/professor" element={
-            <ProtectedRoute allowedRoles={['PROFESSOR']}>
-              <DashboardProfessor />
+
+          <Route path="/settings" element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'PROFESSOR', 'LIBRARIAN', 'ADMIN']}>
+              <div>Settings Page - To be implemented</div>
             </ProtectedRoute>
           } />
-          
-          <Route path="/dashboard/librarian" element={
-            <ProtectedRoute allowedRoles={['LIBRARIAN', 'ADMIN']}>
-              <DashboardLibrarian />
+
+          <Route path="/Notifications" element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'PROFESSOR', 'LIBRARIAN', 'ADMIN','VISITOR']}>
+              <div>Notifications Page - To be implemented</div>
             </ProtectedRoute>
           } />
-          
-          <Route path="/dashboard/admin" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <DashboardAdmin />
+
+          {/* Editeur personnel */}
+          <Route path="/personal-editor" element={
+            <ProtectedRoute allowedRoles={['STUDENT', 'PROFESSOR', 'LIBRARIAN', 'ADMIN']}>
+              <Editeur/>
             </ProtectedRoute>
+          } /> 
+
+
+          <Route path = "/dashboard" element = {
+            <Dashboard/>
           } />
 
           {/* Livres personnels */}
@@ -94,11 +104,16 @@ function App() {
               <PersonalBookEditor />
             </ProtectedRoute>
           } />
-          
+
+          <Route path="/new" element={<NewRelease />} />
+          <Route path="/popular" element={<Popular />} />
+          <Route path="/ebook" element={<EBook />} />
+          <Route path="/articles" element={<Articles />} />
+
           <Route path="/library/personal/:id" element={<PublicPersonalBook />} />
+          <Route path="/publications" element={<PublicPublications />} />
         </Routes>
       </Main>
-      <Footer />
     </AppContainer>
   );
 }

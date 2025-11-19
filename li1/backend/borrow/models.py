@@ -8,6 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from users.models import User
+from django.conf import settings
 from books.models import Book
 
 
@@ -20,7 +21,7 @@ class Borrow(models.Model):
         RETURNED = 'RETURNED', _('Retourné')
         OVERDUE = 'OVERDUE', _('En retard')
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='borrows', verbose_name=_('Utilisateur'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='borrows', verbose_name=_('Utilisateur'))
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='borrows', verbose_name=_('Livre'))
     borrow_date = models.DateTimeField(default=timezone.now, verbose_name=_("Date d'emprunt"))
     due_date = models.DateTimeField(verbose_name=_('Date de retour prévue'))
@@ -76,7 +77,7 @@ class Reservation(models.Model):
         CANCELLED = 'CANCELLED', _('Annulé')
         COMPLETED = 'COMPLETED', _('Complété')
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations', verbose_name=_('Utilisateur'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reservations', verbose_name=_('Utilisateur'))
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reservations', verbose_name=_('Livre'))
     reservation_date = models.DateTimeField(default=timezone.now, verbose_name=_('Date de réservation'))
     expiry_date = models.DateTimeField(verbose_name=_("Date d'expiration"))

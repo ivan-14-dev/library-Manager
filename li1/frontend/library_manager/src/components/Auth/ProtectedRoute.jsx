@@ -11,6 +11,10 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (!isAuthenticated) {
+    // Éviter la boucle si déjà sur login
+    if (location.pathname === '/login') {
+      return children;
+    }
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

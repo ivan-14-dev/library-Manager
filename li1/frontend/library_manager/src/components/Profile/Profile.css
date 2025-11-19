@@ -1,0 +1,151 @@
+/* 🔷 GLOBAL STYLE */
+body {
+  font-family: "Inter", sans-serif;
+  background: #f5f7fa;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(90deg, #4f46e5, #9333ea);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-circle {
+  background: white;
+  color: #4f46e5;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 50%;
+}
+.logo h1 {
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+}
+
+/* PROFILE CONTAINER */
+.profile-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+/* PROFILE CARD */
+.profile-card {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.avatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #4f46e5, #9333ea);
+  border-radius: 50%;
+  color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.role {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.role.professor { background: #dcfce7; color: #166534; }
+.role.student { background: #dbeafe; color: #1e3a8a; }
+.role.librarian { background: #ede9fe; color: #5b21b6; }
+.role.admin { background: #fee2e2; color: #991b1b; }
+.role.visitor { background: #f3f4f6; color: #374151; }
+
+.join-date {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* FORM */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.2rem;
+}
+.input-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.input-wrapper {
+  position: relative;
+}
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #888;
+}
+input, textarea {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: 0.2s;
+  font-size: 1rem;
+}
+input:focus, textarea:focus {
+  border-color: #4f46e5;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+}
+textarea { min-height: 80px; resize: vertical; }
+.error { color: #dc2626; font-size: 0.85rem; margin-top: 2px; }
+
+/* BUTTONS */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+button {
+  cursor: pointer;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.edit-btn { background: #4f46e5; color: white; }
+.edit-btn:hover { background: #4338ca; }
+.cancel-btn { background: #f3f4f6; }
+.cancel-btn:hover { background: #e5e7eb; }
+.save-btn { background: #16a34a; color: white; }
+.save-btn:hover { background: #15803d; }

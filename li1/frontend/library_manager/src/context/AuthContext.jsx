@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../api/auth.js';
-import { toast } from 'react-toastify';
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { authAPI } from '../api/auth';
 
 const AuthContext = createContext();
 
@@ -14,99 +14,141 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Vérifier l'authentification au chargement
   useEffect(() => {
-    if (token) {
-      // Vérifier la validité du token et récupérer les infos utilisateur
-      authAPI.getProfile(token)
-        .then(response => {
-          setUser(response.data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Erreur de vérification du token:', error);
-          logout();
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [token]);
+    const checkAuth = async () => {
+      console.log('🔄 Vérification auth au chargement');
+
+      try {
+        console.log('🔍 Appel de /auth/me/...');
+        const response = await authAPI.getProfile();
+        console.log('✅ /auth/me/ réponse:', response.data);
+        setUser(response.data);
+      } catch (error) {
+        console.log('❌ /auth/me/ a échoué:', error.response?.status);
+        // Ne pas nettoyer le localStorage ici, laisser l'utilisateur se déconnecter manuellement
+        // Si on est sur la page login, éviter de rediriger inutilement
+        if (window.location.pathname !== '/login') {
+          // Optionnel: rediriger vers login seulement si nécessaire
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const login = async (credentials) => {
     try {
+      setError(null);
+      console.log('🔐 TENTATIVE DE CONNEXION avec /auth/login/');
+
       const response = await authAPI.login(credentials);
-      const { user: userData, access } = response.data;
+      console.log('✅ RÉPONSE LOGIN COMPLÈTE:', response.data);
+
+      // VOTRE API RETOURNE PROBABLEMENT :
+      // { user: {...}, access: 'token', refresh: 'token' } 
+      // OU juste { user: {...} } si vous n'utilisez pas JWT
+      
+      const responseData = response.data;
+      
+      // Gestion flexible selon la structure de réponse
+      if (responseData.access && responseData.refresh) {
+        // Structure JWT
+        console.log('🎯 Structure JWT détectée');
+        localStorage.setItem('access_token', responseData.access);
+        localStorage.setItem('refresh_token', responseData.refresh);
+      } else {
+        console.log('🎯 Structure sans JWT détectée');
+        // Nettoyer les tokens JWT si existants
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      }
+
+      // L'utilisateur peut être dans user ou directement dans response.data
+      const userData = responseData.user || responseData;
+      console.log('👤 Données utilisateur:', userData);
+
+      // Stocker les infos utilisateur dans localStorage pour persistance
+      localStorage.setItem('user_data', JSON.stringify(userData));
       
       setUser(userData);
-      setToken(access);
-      localStorage.setItem('token', access);
       
-      toast.success('Connexion réussie!');
-      return userData;
+      console.log('🎉 Connexion réussie!');
+      return { success: true, user: userData };
+
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Erreur de connexion');
-      throw error;
+      console.error('❌ ERREUR DE CONNEXION:', error);
+      
+      let errorMessage = 'Erreur de connexion';
+      
+      if (error.code === 'ERR_NETWORK') {
+        errorMessage = 'Erreur réseau. Vérifiez votre connexion.';
+      } else if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        if (errorData.detail) {
+          errorMessage = errorData.detail;
+        } else if (errorData.non_field_errors) {
+          errorMessage = errorData.non_field_errors[0];
+        } else {
+          errorMessage = 'Identifiants incorrects';
+        }
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Email ou mot de passe incorrect';
+      }
+
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     }
   };
 
-  const register = async (userData) => {
+  const logout = async () => {
+    console.log('🚪 DÉCONNEXION');
+
     try {
-      const response = await authAPI.register(userData);
-      const { user: newUser, access } = response.data;
-      
-      setUser(newUser);
-      setToken(access);
-      localStorage.setItem('token', access);
-      
-      toast.success('Inscription réussie!');
-      return newUser;
+      await authAPI.logout();
+      console.log('✅ Déconnexion serveur réussie');
     } catch (error) {
-      toast.error(error.response?.data?.error || "Erreur d'inscription");
-      throw error;
+      console.log('⚠️ Erreur déconnexion serveur:', error.response?.status);
     }
-  };
 
-  const logout = () => {
-    if (token) {
-      authAPI.logout({ refresh: localStorage.getItem('refresh') })
-        .catch(error => console.error('Erreur lors de la déconnexion:', error));
-    }
-    
+    // Nettoyage côté client
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_data');
     setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh');
-    toast.info('Déconnexion réussie');
+    setError(null);
+
+    console.log('✅ Déconnexion client réussie');
   };
 
-  const updateProfile = async (profileData) => {
+  const loginWithProvider = async (provider) => {
     try {
-      const response = await authAPI.updateProfile(profileData, token);
-      setUser(response.data);
-      toast.success('Profil mis à jour avec succès!');
-      return response.data;
+      setError(null);
+      console.log(`🔐 TENTATIVE DE CONNEXION avec ${provider}`);
+
+      // Redirect to backend OAuth endpoint
+      window.location.href = `http://127.0.0.1:8000/api/auth/${provider}/login/`;
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Erreur de mise à jour');
+      console.error(`❌ ERREUR DE CONNEXION ${provider}:`, error);
+      setError(`Erreur lors de la connexion avec ${provider}`);
       throw error;
     }
   };
 
   const value = {
     user,
-    token,
     loading,
+    error,
     login,
-    register,
     logout,
-    updateProfile,
-    isAuthenticated: !!user,
-    isStudent: user?.role === 'STUDENT',
-    isProfessor: user?.role === 'PROFESSOR',
-    isLibrarian: user?.role === 'LIBRARIAN',
-    isAdmin: user?.role === 'ADMIN',
+    loginWithProvider,
+    clearError: () => setError(null),
+    isAuthenticated: !!user
   };
 
   return (
@@ -115,3 +157,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

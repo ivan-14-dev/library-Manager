@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-
+import {styled} from 'styled-components';
 const GlobalStyles = createGlobalStyle`
   * {
     margin: 0;
@@ -275,5 +275,334 @@ const GlobalStyles = createGlobalStyle`
     }
   }
 `;
+
+
+// Layout principal
+export const MainLayout = styled.div`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+// Arrière-plan blanc
+export const WhiteBackground = styled.div`
+  background: ${props => props.theme.colors.white};
+  min-height: 100vh;
+`;
+
+// Container principal
+export const MainContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
+
+// Container pour le dashboard
+export const DashboardContainer = styled.div`
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+// Content area
+export const ContentArea = styled.main`
+  padding: 2rem;
+  background: ${props => props.theme.colors.gray[50]};
+  min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+`;
+
+// Card de base
+export const Card = styled.div`
+  background: ${props => props.theme.colors.white};
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: ${props => props.theme.shadows.sm};
+  border: 1px solid ${props => props.theme.colors.gray[200]};
+`;
+
+// Grid pour les cartes
+export const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+`;
+
+// Section title
+export const SectionTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: ${props => props.theme.colors.gray[800]};
+  margin-bottom: 1rem;
+`;
+
+// Section subtitle
+export const SectionSubtitle = styled.p`
+  color: ${props => props.theme.colors.gray[600]};
+  margin-bottom: 1.5rem;
+`;
+
+// Status badges
+export const StatusBadge = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  
+  ${props => {
+    switch (props.variant) {
+      case 'success':
+        return `
+          background: ${props.theme.colors.success}20;
+          color: ${props.theme.colors.success};
+        `;
+      case 'warning':
+        return `
+          background: ${props.theme.colors.warning}20;
+          color: ${props.theme.colors.warning};
+        `;
+      case 'error':
+        return `
+          background: ${props.theme.colors.error}20;
+          color: ${props.theme.colors.error};
+        `;
+      case 'info':
+        return `
+          background: ${props.theme.colors.info}20;
+          color: ${props.theme.colors.info};
+        `;
+      default:
+        return `
+          background: ${props.theme.colors.gray[100]};
+          color: ${props.theme.colors.gray[600]};
+        `;
+    }
+  }}
+`;
+
+// Loading spinner
+export const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid ${props => props.theme.colors.gray[300]};
+  border-radius: 50%;
+  border-top-color: ${props => props.theme.colors.primary};
+  animation: spin 1s ease-in-out infinite;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+// Empty state
+export const EmptyState = styled.div`
+  text-align: center;
+  padding: 3rem;
+  color: ${props => props.theme.colors.gray[500]};
+  
+  svg {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+`;
+
+// Button group
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  
+  ${props => props.justify && `justify-content: ${props.justify};`}
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+    
+    button {
+      width: 100%;
+    }
+  }
+`;
+
+// Form group
+export const FormGroup = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+// Label
+export const Label = styled.label`
+  display: block;
+  font-weight: 500;
+  color: ${props => props.theme.colors.gray[700]};
+  margin-bottom: 0.5rem;
+`;
+
+// Input
+export const Input = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid ${props => props.theme.colors.gray[300]};
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${props => props.theme.colors.primary};
+    box-shadow: 0 0 0 3px ${props => props.theme.colors.primary}20;
+  }
+
+  &:disabled {
+    background: ${props => props.theme.colors.gray[100]};
+    color: ${props => props.theme.colors.gray[500]};
+  }
+`;
+
+// Select
+export const Select = styled.select`
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid ${props => props.theme.colors.gray[300]};
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${props => props.theme.colors.primary};
+    box-shadow: 0 0 0 3px ${props => props.theme.colors.primary}20;
+  }
+`;
+
+// Textarea
+export const Textarea = styled.textarea`
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid ${props => props.theme.colors.gray[300]};
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${props => props.theme.colors.primary};
+    box-shadow: 0 0 0 3px ${props => props.theme.colors.primary}20;
+  }
+`;
+
+// Table
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: ${props => props.theme.shadows.sm};
+`;
+
+export const TableHead = styled.thead`
+  background: ${props => props.theme.colors.gray[50]};
+`;
+
+export const TableRow = styled.tr`
+  border-bottom: 1px solid ${props => props.theme.colors.gray[200]};
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const TableHeader = styled.th`
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: ${props => props.theme.colors.gray[700]};
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const TableCell = styled.td`
+  padding: 1rem;
+  color: ${props => props.theme.colors.gray[700]};
+`;
+
+// Modal overlay
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+`;
+
+// Modal content
+export const ModalContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: ${props => props.theme.shadows.xl};
+`;
+
+// Modal header
+export const ModalHeader = styled.div`
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+`;
+
+// Modal title
+export const ModalTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: ${props => props.theme.colors.gray[800]};
+  margin: 0;
+`;
+
+// Modal close button
+export const ModalClose = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: ${props => props.theme.colors.gray[500]};
+  padding: 0;
+  
+  &:hover {
+    color: ${props => props.theme.colors.gray[700]};
+  }
+`;
+
 
 export default GlobalStyles;

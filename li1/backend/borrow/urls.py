@@ -4,7 +4,8 @@ URLs pour l'application borrow
 from django.urls import path
 from .views import (
     BorrowListView, AllBorrowsListView, BorrowCreateView, ReturnBookView,
-    ReservationListView, AllReservationsListView, ReservationCreateView, CancelReservationView
+    ReservationListView, AllReservationsListView, ReservationCreateView, CancelReservationView,
+    RenewBorrowView, BorrowStatsView
 )
 
 urlpatterns = [
@@ -13,7 +14,9 @@ urlpatterns = [
     path('all/', AllBorrowsListView.as_view(), name='all-borrows'),
     path('borrow/', BorrowCreateView.as_view(), name='borrow-book'),
     path('return/', ReturnBookView.as_view(), name='return-book'),
-    
+    path('<int:borrow_id>/renew/', RenewBorrowView.as_view(), name='renew-borrow'),
+    path('stats/', BorrowStatsView.as_view(), name='borrow-stats'),
+
     # Réservations
     path('reservations/my/', ReservationListView.as_view(), name='my-reservations'),
     path('reservations/all/', AllReservationsListView.as_view(), name='all-reservations'),

@@ -45,7 +45,14 @@ urlpatterns = [
     path('api/notifications/', include('notifications.urls')),
     path('api/reports/', include('reports.urls')),
     path('api/payments/', include('payments.urls')),
-    
+
+    # Applications ajoutées
+    path('api/groups/', include('groups.urls')),
+    path('api/publishing/', include('publishing.urls')),
+    path('api/ai/', include('ai.urls')),
+    path('api/analytics/', include('analytics.urls')),
+    path('api/export/', include('export.urls')),
+
     # Documentation
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

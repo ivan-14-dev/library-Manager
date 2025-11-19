@@ -1,19 +1,24 @@
-"""
-URLs pour l'application notifications
-"""
-from django.urls import path
-from .views import (
-    NotificationListView, 
-    UnreadNotificationListView, 
-    MarkAsReadView, 
-    MarkAllAsReadView,
-    NotificationCreateView
-)
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from . import views
+
+router = DefaultRouter()
+router.register(r'notifications', views.NotificationViewSet, basename='notification')
+router.register(r'messages', views.MessageViewSet, basename='message')
+router.register(r'reading-reports', views.ReadingReportViewSet, basename='readingreport')
+router.register(r'book-ratings', views.BookRatingViewSet, basename='bookrating')
 
 urlpatterns = [
-    path('my/', NotificationListView.as_view(), name='my-notifications'),
-    path('my/unread/', UnreadNotificationListView.as_view(), name='unread-notifications'),
-    path('mark-as-read/', MarkAsReadView.as_view(), name='mark-as-read'),
-    path('mark-all-as-read/', MarkAllAsReadView.as_view(), name='mark-all-as-read'),
-    path('send/', NotificationCreateView.as_view(), name='send-notification'),
+    path('', include(router.urls)),
+]
+
+# URLs pour les actions personnalisées
+urlpatterns += [
+    path('notifications/mark_all_as_read/', 
+         views.NotificationViewSet.as_view({'post': 'mark_all_as_read'}), 
+         name='notifications-mark-all-read'),
+
+    path('messages/conversations/', 
+         views.MessageViewSet.as_view({'get': 'conversations'}), 
+         name='messages-conversations'),
 ]

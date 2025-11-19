@@ -4,7 +4,7 @@ Modèles pour la gestion des paiements d'amendes
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from users.models import User
+from django.conf import settings
 
 
 class Payment(models.Model):
@@ -22,7 +22,7 @@ class Payment(models.Model):
         CASH = 'CASH', _('Espèces')
         TRANSFER = 'TRANSFER', _('Virement')
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments', verbose_name=_('Utilisateur'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payments', verbose_name=_('Utilisateur'))
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('Montant'))
     description = models.TextField(verbose_name=_('Description'))
     status = models.CharField(

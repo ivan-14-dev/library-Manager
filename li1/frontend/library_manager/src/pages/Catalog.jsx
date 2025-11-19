@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useQuery } from 'react-query';
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi';
-import BookCard from '../components/Book/BookCard.jsx';
-import { booksAPI } from '../api/auth.js';
+import BookCard from '../components/Books/BooksCard.jsx';
+import { booksAPI } from '../api/books';
 
 const CatalogContainer = styled.div`
   padding: 2rem 0;
