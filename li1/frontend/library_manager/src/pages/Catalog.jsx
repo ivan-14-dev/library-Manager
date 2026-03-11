@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FiSearch, FiFilter, FiX } from 'react-icons/fi';
 import BookCard from '../components/Books/BooksCard.jsx';
 import { booksAPI } from '../api/books';
@@ -164,13 +164,11 @@ const Catalog = () => {
   const [categories, setCategories] = useState([]);
   const [languages, setLanguages] = useState([]);
 
-  const { data, isLoading, error, refetch } = useQuery(
-    ['books', searchParams],
-    () => booksAPI.getBooks(searchParams),
-    {
-      keepPreviousData: true,
-    }
-  );
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['books', searchParams],
+    queryFn: () => booksAPI.getBooks(searchParams),
+    placeholderData: (previousData) => previousData,
+  });
 
   useEffect(() => {
     // Charger les catégories et langues disponibles

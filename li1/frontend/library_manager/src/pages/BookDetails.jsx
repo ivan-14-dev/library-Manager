@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FiArrowLeft, FiBook, FiUser, FiCalendar, FiHash, FiClock, FiAlertCircle } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { booksAPI, borrowAPI } from '../api/auth.js';
@@ -195,47 +195,41 @@ const BookDetails = () => {
   const queryClient = useQueryClient();
   const [actionLoading, setActionLoading] = useState(false);
 
-  const { data: book, isLoading, error } = useQuery(
-    ['book', id],
-    () => booksAPI.getBook(id),
-    {
-      enabled: !!id,
-    }
-  );
+  const { data: book, isLoading, error } = useQuery({
+    queryKey: ['book', id],
+    queryFn: () => booksAPI.getBook(id),
+    enabled: !!id,
+  });
 
-  const borrowMutation = useMutation(
-    () => borrowAPI.borrowBook(id),
-    {
-      onSuccess: () => {
-        toast.success('Livre emprunté avec succès!');
-        queryClient.invalidateQueries(['book', id]);
-        queryClient.invalidateQueries('my-borrows');
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.error || 'Erreur lors de l\'emprunt');
-      },
-      onSettled: () => {
-        setActionLoading(false);
-      }
+  const borrowMutation = useMutation({
+    mutationFn: () => borrowAPI.borrowBook(id),
+    onSuccess: () => {
+      toast.success('Livre emprunté avec succès!');
+      queryClient.invalidateQueries({ queryKey: ['book', id] });
+      queryClient.invalidateQueries({ queryKey: ['my-borrows'] });
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || 'Erreur lors de l\'emprunt');
+    },
+    onSettled: () => {
+      setActionLoading(false);
     }
-  );
+  });
 
-  const reserveMutation = useMutation(
-    () => borrowAPI.reserveBook(id),
-    {
-      onSuccess: () => {
-        toast.success('Livre réservé avec succès!');
-        queryClient.invalidateQueries(['book', id]);
-        queryClient.invalidateQueries('my-reservations');
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.error || 'Erreur lors de la réservation');
-      },
-      onSettled: () => {
-        setActionLoading(false);
-      }
+  const reserveMutation = useMutation({
+    mutationFn: () => borrowAPI.reserveBook(id),
+    onSuccess: () => {
+      toast.success('Livre réservé avec succès!');
+      queryClient.invalidateQueries({ queryKey: ['book', id] });
+      queryClient.invalidateQueries({ queryKey: ['my-reservations'] });
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || 'Erreur lors de la réservation');
+    },
+    onSettled: () => {
+      setActionLoading(false);
     }
-  );
+  });
 
   const handleBorrow = async () => {
     if (!isAuthenticated) {

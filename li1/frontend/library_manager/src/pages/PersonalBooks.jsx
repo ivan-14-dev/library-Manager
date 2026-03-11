@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FiPlus, FiBook, FiEye, FiEdit, FiTrash2, FiFilter } from 'react-icons/fi';
 import { booksAPI } from '../api/auth.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -198,13 +198,11 @@ const PersonalBooks = () => {
   const { isAuthenticated } = useAuth();
   const [filter, setFilter] = useState('all'); // 'all', 'draft', 'published', 'archived'
 
-  const { data: books, isLoading, error, refetch } = useQuery(
-    'personal-books',
-    () => booksAPI.getPersonalBooks(),
-    {
-      enabled: isAuthenticated,
-    }
-  );
+  const { data: books, isLoading, error, refetch } = useQuery({
+    queryKey: ['personal-books'],
+    queryFn: () => booksAPI.getPersonalBooks(),
+    enabled: isAuthenticated,
+  });
 
   const filteredBooks = books?.data?.filter(book => {
     if (filter === 'all') return true;

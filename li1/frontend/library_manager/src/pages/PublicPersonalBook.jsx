@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FiArrowLeft, FiBook, FiUser, FiClock, FiEye } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -149,13 +149,11 @@ const Error = styled.div`
 const PublicPersonalBook = () => {
   const { id } = useParams();
 
-  const { data: book, isLoading, error } = useQuery(
-    ['public-personal-book', id],
-    () => booksAPI.getPublicPersonalBook(id),
-    {
-      enabled: !!id,
-    }
-  );
+  const { data: book, isLoading, error } = useQuery({
+    queryKey: ['public-personal-book', id],
+    queryFn: () => booksAPI.getPublicPersonalBook(id),
+    enabled: !!id,
+  });
 
   if (isLoading) {
     return (

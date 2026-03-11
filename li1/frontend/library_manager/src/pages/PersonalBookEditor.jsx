@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FiSave, FiEye, FiCode, FiArrowLeft, FiUpload, FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import TextEditor from '../components/Editor/TextEditor.jsx';
@@ -234,13 +234,11 @@ const PersonalBookEditor = () => {
   const [coverImage, setCoverImage] = useState(null);
   const [coverPreview, setCoverPreview] = useState('');
 
-  const { data: book, isLoading } = useQuery(
-    ['personal-book', id],
-    () => booksAPI.getPersonalBook(id),
-    {
-      enabled: isEditing && !!id,
-    }
-  );
+  const { data: book, isLoading } = useQuery({
+    queryKey: ['personal-book', id],
+    queryFn: () => booksAPI.getPersonalBook(id),
+    enabled: isEditing && !!id,
+  });
 
   const {
     register,
@@ -266,33 +264,29 @@ const PersonalBookEditor = () => {
     }
   }, [book, setValue]);
 
-  const createMutation = useMutation(
-    (bookData) => booksAPI.createPersonalBook(bookData),
-    {
-      onSuccess: () => {
-        toast.success('Livre créé avec succès!');
-        queryClient.invalidateQueries('personal-books');
-        navigate('/personal-books');
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.error || 'Erreur lors de la création');
-      },
-    }
-  );
+  const createMutation = useMutation({
+    mutationFn: (bookData) => booksAPI.createPersonalBook(bookData),
+    onSuccess: () => {
+      toast.success('Livre créé avec succès!');
+      queryClient.invalidateQueries({ queryKey: ['personal-books'] });
+      navigate('/personal-books');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || 'Erreur lors de la création');
+    },
+  });
 
-  const updateMutation = useMutation(
-    (bookData) => booksAPI.updatePersonalBook(id, bookData),
-    {
-      onSuccess: () => {
-        toast.success('Livre mis à jour avec succès!');
-        queryClient.invalidateQueries(['personal-book', id]);
-        queryClient.invalidateQueries('personal-books');
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.error || 'Erreur lors de la mise à jour');
-      },
-    }
-  );
+  const updateMutation = useMutation({
+    mutationFn: (bookData) => booksAPI.updatePersonalBook(id, bookData),
+    onSuccess: () => {
+      toast.success('Livre mis à jour avec succès!');
+      queryClient.invalidateQueries({ queryKey: ['personal-book', id] });
+      queryClient.invalidateQueries({ queryKey: ['personal-books'] });
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.error || 'Erreur lors de la mise à jour');
+    },
+  });
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];

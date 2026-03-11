@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FiBook, FiUser, FiClock, FiEye, FiHeart, FiMessageCircle } from 'react-icons/fi';
 import { booksAPI } from '../api/auth.js';
 
@@ -153,13 +153,11 @@ const EmptyIcon = styled.div`
 `;
 
 const PublicPublications = () => {
-  const { data: publications, isLoading, error } = useQuery(
-    'public-publications',
-    () => booksAPI.getPublicPersonalBooks(),
-    {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    }
-  );
+  const { data: publications, isLoading, error } = useQuery({
+    queryKey: ['public-publications'],
+    queryFn: () => booksAPI.getPublicPersonalBooks(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   if (isLoading) {
     return (
