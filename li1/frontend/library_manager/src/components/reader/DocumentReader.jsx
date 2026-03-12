@@ -376,42 +376,34 @@ const DocumentReader = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Appels API
-  const { data: document, isLoading, error } = useQuery(
-    ['document', documentId],
-    () => documentsAPI.getDocument(documentId),
-    {
-      enabled: !!documentId,
-      retry: 2,
-    }
-  );
+  const { data: document, isLoading, error } = useQuery({
+    queryKey: ['document', documentId],
+    queryFn: () => documentsAPI.getDocument(documentId),
+    enabled: !!documentId,
+    retry: 2,
+  });
 
-  const { data: readingSession } = useQuery(
-    ['reading-session', documentId],
-    () => readingAPI.getReadingSession(documentId),
-    {
-      enabled: !!documentId,
-    }
-  );
+  const { data: readingSession } = useQuery({
+    queryKey: ['reading-session', documentId],
+    queryFn: () => readingAPI.getReadingSession(documentId),
+    enabled: !!documentId,
+  });
 
   // Mutation pour sauvegarder la progression
-  const saveProgressMutation = useMutation(
-    (progress) => readingAPI.saveReadingProgress(documentId, progress),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['reading-session', documentId]);
-      },
-    }
-  );
+  const saveProgressMutation = useMutation({
+    mutationFn: (progress) => readingAPI.saveReadingProgress(documentId, progress),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reading-session', documentId] });
+    },
+  });
 
   // Mutation pour ajouter aux favoris
-  const toggleFavoriteMutation = useMutation(
-    () => documentsAPI.toggleFavorite(documentId),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['document', documentId]);
-      },
-    }
-  );
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: () => documentsAPI.toggleFavorite(documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['document', documentId] });
+    },
+  });
 
   // Protection contre la copie
   useEffect(() => {
